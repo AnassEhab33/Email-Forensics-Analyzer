@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Forensics Analyzer</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="upload-page">
+    <div class="particles"></div>
+
+    <div class="upload-container">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </div>
+        <h1>Email Forensics Analyzer</h1>
+        <p class="subtitle">Digital Forensics Investigation Tool</p>
+      </div>
+
+      <div class="upload-card">
+        <div class="card-header">
+          <h2>📂 Upload MBOX File</h2>
+          <p>Upload your email archive to begin forensic analysis</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+          <span class="error-icon">⚠️</span>
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <form
+          action="{{ url_for('upload_file') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="upload-form"
+        >
+          <div class="file-drop-zone" id="dropZone">
+            <input
+              type="file"
+              name="mbox_file"
+              id="mboxFile"
+              accept=".mbox,.txt"
+              required
+            />
+            <div class="drop-content">
+              <div class="drop-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </div>
+              <p class="drop-text">Drag & drop your MBOX file here</p>
+              <p class="drop-subtext">or click to browse</p>
+              <span class="file-name" id="fileName"></span>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <span class="btn-icon">🔍</span>
+            Start Forensic Analysis
+          </button>
+        </form>
+
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">📧</span>
+            <span>Header Analysis</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🔴</span>
+            <span>Spoofing Detection</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🔗</span>
+            <span>Interaction Graph</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📎</span>
+            <span>Attachment Extraction</span>
+          </div>
+        </div>
+      </div>
+
+      <footer class="upload-footer">
+        <p>Digital Forensics Project • Built with Python & Flask</p>
+      </footer>
+    </div>
+
+    <script>
+      // File drop zone functionality
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("mboxFile");
+      const fileName = document.getElementById("fileName");
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        dropZone.addEventListener(
+          eventName,
+          () => dropZone.classList.add("dragover"),
+          false
+        );
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(
+          eventName,
+          () => dropZone.classList.remove("dragover"),
+          false
+        );
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length) {
+          fileInput.files = files;
+          updateFileName(files[0].name);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length) {
+          updateFileName(e.target.files[0].name);
+        }
+      });
+
+      function updateFileName(name) {
+        fileName.textContent = name;
+        dropZone.classList.add("has-file");
+      }
+    </script>
+  </body>
+</html>

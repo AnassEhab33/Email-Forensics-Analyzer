@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Detail - Email Forensics Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">📧</span>
+            <span>Email Forensics Analyzer</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('attachments_view') }}">Attachments</a>
+            <a href="{{ url_for('reset') }}" class="reset-btn">New Analysis</a>
+        </div>
+    </nav>
+
+    <main class="email-detail-page">
+        <div class="detail-header">
+            <a href="{{ url_for('dashboard') }}" class="back-link">← Back to Dashboard</a>
+            <div class="email-title">
+                <h1>{{ email.data.subject }}</h1>
+                <span class="risk-badge large risk-{{ email.spoofing.risk_level | lower }}">
+                    {{ email.spoofing.risk_level }} RISK ({{ email.spoofing.risk_score }}%)
+                </span>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <!-- Email Headers Panel -->
+            <section class="detail-panel headers-panel">
+                <div class="panel-header">
+                    <h2>📋 Email Headers</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="headers-list">
+                        {% for header_name, header_value in email.header_summary %}
+                        <div class="header-row {% if header_name in ['Return-Path', 'Reply-To'] and email.spoofing.is_suspicious %}suspicious{% endif %}">
+                            <span class="header-name">{{ header_name }}</span>
+                            <span class="header-value">{{ header_value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Received Chain -->
+                    {% if email.headers.received_chain %}
+                    <div class="received-chain">
+                        <h3>📡 Email Routing (Received Headers)</h3>
+                        <div class="chain-list">
+                            {% for hop in email.headers.received_chain %}
+                            <div class="chain-hop">
+                                <span class="hop-number">{{ loop.index }}</span>
+                                <div class="hop-details">
+                                    {% if hop.from_server %}
+                                    <span><strong>From:</strong> {{ hop.from_server }}</span>
+                                    {% endif %}
+                                    {% if hop.by_server %}
+                                    <span><strong>By:</strong> {{ hop.by_server }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Spoofing Analysis Panel -->
+            <section class="detail-panel spoofing-panel">
+                <div class="panel-header">
+                    <h2>🔴 Spoofing Analysis</h2>
+                </div>
+                <div class="panel-content">
+                    {% if email.spoofing.indicators %}
+                    <div class="indicators-list">
+                        {% for indicator in email.spoofing.indicators %}
+                        <div class="indicator-card severity-{{ indicator.severity | lower }}">
+                            <div class="indicator-header">
+                                <span class="severity-badge">{{ indicator.severity }}</span>
+                                <span class="indicator-type">{{ indicator.type }}</span>
+                            </div>
+                            <h4>{{ indicator.title }}</h4>
+                            <p>{{ indicator.description }}</p>
+                            {% if indicator.from and indicator.return_path %}
+                            <div class="indicator-details">
+                                <span><strong>From:</strong> {{ indicator.from }}</span>
+                                <span><strong>Return-Path:</strong> {{ indicator.return_path }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="no-indicators">
+                        <span class="check-icon">✅</span>
+                        <h3>No Spoofing Indicators Detected</h3>
+                        <p>This email appears to be legitimate based on our analysis.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Email Body Panel -->
+            <section class="detail-panel body-panel">
+                <div class="panel-header">
+                    <h2>📝 Email Body</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="email-body">
+                        {% if email.data.body_text %}
+                        <pre class="body-text">{{ email.data.body_text }}</pre>
+                        {% elif email.data.body_html %}
+                        <div class="body-html-notice">
+                            <span>⚠️ HTML content detected - displaying as text for safety</span>
+                        </div>
+                        <pre class="body-text">{{ email.data.body_html | striptags }}</pre>
+                        {% else %}
+                        <p class="no-body">No body content available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attachments Panel -->
+            <section class="detail-panel attachments-detail-panel">
+                <div class="panel-header">
+                    <h2>📎 Attachments ({{ email.data.attachments | length }})</h2>
+                </div>
+                <div class="panel-content">
+                    {% if email.data.attachments %}
+                    <div class="attachment-list">
+                        {% for attachment in email.data.attachments %}
+                        <div class="attachment-item {% if attachment.filename.endswith(('.exe', '.bat', '.js', '.vbs', '.scr')) %}dangerous{% endif %}">
+                            <span class="attachment-icon">
+                                {% if attachment.content_type.startswith('image') %}🖼️
+                                {% elif attachment.content_type.startswith('application/pdf') %}📄
+                                {% elif 'zip' in attachment.content_type or 'rar' in attachment.content_type %}📦
+                                {% else %}📁{% endif %}
+                            </span>
+                            <div class="attachment-info">
+                                <span class="attachment-name">{{ attachment.filename }}</span>
+                                <span class="attachment-meta">{{ attachment.content_type }} • {{ attachment.size }} bytes</span>
+                            </div>
+                            {% if attachment.filename.endswith(('.exe', '.bat', '.js', '.vbs', '.scr')) %}
+                            <span class="danger-badge">⚠️ DANGEROUS</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="no-attachments">No attachments in this email</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- All Headers (Collapsible) -->
+            <section class="detail-panel all-headers-panel">
+                <div class="panel-header collapsible" onclick="toggleAllHeaders()">
+                    <h2>🔧 All Headers (Raw)</h2>
+                    <span class="toggle-icon" id="toggleIcon">▼</span>
+                </div>
+                <div class="panel-content" id="allHeadersContent" style="display: none;">
+                    <div class="raw-headers">
+                        {% for key, value in email.data.headers.items() %}
+                        <div class="raw-header-row">
+                            <span class="raw-header-key">{{ key }}:</span>
+                            <span class="raw-header-value">{{ value[:200] }}{% if value|length > 200 %}...{% endif %}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function toggleAllHeaders() {
+            const content = document.getElementById('allHeadersContent');
+            const icon = document.getElementById('toggleIcon');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▼';
+            }
+        }
+    </script>
+</body>
+</html>

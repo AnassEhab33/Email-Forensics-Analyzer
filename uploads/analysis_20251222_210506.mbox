@@ -1,0 +1,214 @@
+From attacker@evil-domain.com Mon Dec 16 10:30:00 2024
+From: "PayPal Security" <security@paypa1.com>
+To: victim@company.com
+Subject: URGENT: Your Account Has Been Suspended - Verify Now
+Date: Mon, 16 Dec 2024 10:30:00 +0000
+Message-ID: <fake123@evil-server.net>
+Return-Path: <attacker@evil-domain.com>
+Reply-To: phishing-reply@malicious.net
+X-Mailer: Mass Mailer Pro
+Content-Type: text/plain; charset="UTF-8"
+
+Dear Valued Customer,
+
+We have detected unusual activity in your PayPal account. Your account has been temporarily suspended.
+
+To restore access, please verify your identity by clicking the link below:
+
+http://paypa1-secure-login.evil-site.com/verify?id=12345
+
+If you do not verify within 24 hours, your account will be permanently closed.
+
+Thank you for your cooperation.
+
+PayPal Security Team
+
+From john.smith@legitimate-company.com Mon Dec 16 11:00:00 2024
+From: John Smith <john.smith@legitimate-company.com>
+To: alice.johnson@company.com
+Subject: Q4 Sales Report - Review Needed
+Date: Mon, 16 Dec 2024 11:00:00 +0000
+Message-ID: <msg-001@legitimate-company.com>
+Return-Path: <john.smith@legitimate-company.com>
+Content-Type: multipart/mixed; boundary="boundary123"
+
+--boundary123
+Content-Type: text/plain; charset="UTF-8"
+
+Hi Alice,
+
+Please find attached the Q4 sales report for your review. Let me know if you have any questions.
+
+Best regards,
+John
+
+--boundary123
+Content-Type: application/pdf; name="Q4_Sales_Report.pdf"
+Content-Disposition: attachment; filename="Q4_Sales_Report.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRv
+YmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PgplbmRvYmoK
+
+--boundary123--
+
+From hacker@malware-server.ru Mon Dec 16 12:15:00 2024
+From: "Microsoft Support" <support@micr0soft-security.com>
+To: victim@company.com
+Subject: Immediate Action Required - Password Expires Today!
+Date: Mon, 16 Dec 2024 12:15:00 +0000
+Message-ID: <spam789@botnet.ru>
+Return-Path: <bounces@malware-server.ru>
+Reply-To: fake-support@scammer.net
+Received-SPF: fail
+Content-Type: multipart/mixed; boundary="malware-boundary"
+
+--malware-boundary
+Content-Type: text/plain; charset="UTF-8"
+
+ATTENTION!
+
+Your Microsoft Office 365 password expires TODAY. You must update it immediately to avoid losing access to your emails and files.
+
+Click here to update your password: http://micr0soft-password-reset.hack.com
+
+DO NOT IGNORE THIS MESSAGE!
+
+Microsoft Support Team
+
+--malware-boundary
+Content-Type: application/x-msdownload; name="Password_Reset_Tool.exe"
+Content-Disposition: attachment; filename="Password_Reset_Tool.exe"
+Content-Transfer-Encoding: base64
+
+TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+--malware-boundary--
+
+From sarah.wilson@company.com Mon Dec 16 14:00:00 2024
+From: Sarah Wilson <sarah.wilson@company.com>
+To: team@company.com
+Cc: manager@company.com
+Subject: Team Meeting Minutes - December 16
+Date: Mon, 16 Dec 2024 14:00:00 +0000
+Message-ID: <meeting-notes-1216@company.com>
+Return-Path: <sarah.wilson@company.com>
+Content-Type: text/plain; charset="UTF-8"
+
+Hello Team,
+
+Here are the key points from today's meeting:
+
+1. Project Alpha deadline extended to January 15
+2. New client onboarding starts next week
+3. Holiday schedule reminder - office closed Dec 24-26
+
+Please let me know if I missed anything important.
+
+Thanks,
+Sarah
+
+From scammer@nigerian-prince.net Mon Dec 16 15:30:00 2024
+From: "Crown Prince of Nigeria" <prince@official-royal-family.com>
+To: lucky-winner@company.com
+Subject: Congratulations! You Have Won $10,000,000 USD
+Date: Mon, 16 Dec 2024 15:30:00 +0000
+Message-ID: <scam-lottery@fake-server.net>
+Return-Path: <scammer@nigerian-prince.net>
+Reply-To: claim-your-money@scam-central.net
+X-Mailer: Spam-O-Matic 3000
+Content-Type: text/plain; charset="UTF-8"
+
+CONGRATULATIONS!!!
+
+You have been selected as the winner of our international lottery!
+
+You have won the grand prize of $10,000,000 USD!
+
+To claim your prize, please send us:
+- Full name
+- Address
+- Bank account number
+- Copy of ID
+
+Reply to this email immediately to claim your winnings!
+
+God Bless,
+Crown Prince Abubakar Muhammad III
+
+From david.brown@partner-company.org Mon Dec 16 16:00:00 2024
+From: David Brown <david.brown@partner-company.org>
+To: alice.johnson@company.com
+Subject: Partnership Agreement Draft
+Date: Mon, 16 Dec 2024 16:00:00 +0000
+Message-ID: <partnership-draft@partner-company.org>
+Return-Path: <david.brown@partner-company.org>
+Content-Type: multipart/mixed; boundary="doc-boundary"
+
+--doc-boundary
+Content-Type: text/plain; charset="UTF-8"
+
+Dear Alice,
+
+As discussed in our call yesterday, I'm attaching the draft partnership agreement for your legal team to review.
+
+Please let me know if you need any modifications.
+
+Best,
+David
+
+--doc-boundary
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document; name="Partnership_Agreement_Draft.docx"
+Content-Disposition: attachment; filename="Partnership_Agreement_Draft.docx"
+Content-Transfer-Encoding: base64
+
+UEsDBBQAAAAIAAAAAACAAAAAAAAAAAAAAAALAAAAd29yZC9kb2N1bWVudC54bWy1VE1v2zAMvQ/Y
+fxB0b5w4+WiBOEWLoECBDmjSnRlJtoVKoiDJSfPvR8lx4i7o0MMu5qN4j+STSH66afMd7MEHe7Z5
+
+--doc-boundary--
+
+From banking-alert@bank0famerica-secure.net Mon Dec 16 17:45:00 2024
+From: "Bank of America Alerts" <alerts@bank0famerica-secure.net>
+To: customer@company.com
+Subject: Security Alert: Unauthorized Access Detected
+Date: Mon, 16 Dec 2024 17:45:00 +0000
+Message-ID: <>
+Return-Path: <phisher@criminal-network.com>
+Reply-To: verify@fake-bank.net
+Content-Type: text/html; charset="UTF-8"
+
+<html>
+<body>
+<h2>SECURITY ALERT</h2>
+<p>Dear Customer,</p>
+<p>We have detected <b>unauthorized access</b> to your Bank of America account from an unknown device.</p>
+<p>If this was not you, please <a href="http://boa-verify-account.malicious.com">CLICK HERE</a> to secure your account immediately.</p>
+<p>Failure to verify may result in account suspension.</p>
+<p>Bank of America Security Team</p>
+</body>
+</html>
+
+From it.department@company.com Mon Dec 16 09:00:00 2024
+From: IT Department <it.department@company.com>
+To: all-staff@company.com
+Subject: System Maintenance Notification - Dec 20
+Date: Mon, 16 Dec 2024 09:00:00 +0000
+Message-ID: <it-maintenance-1220@company.com>
+Return-Path: <it.department@company.com>
+Content-Type: text/plain; charset="UTF-8"
+
+Hello Everyone,
+
+This is a reminder that we will be performing scheduled system maintenance on Friday, December 20th from 10:00 PM to 2:00 AM.
+
+During this time, the following services will be unavailable:
+- Email
+- VPN
+- File Servers
+
+Please save your work and log off before 10:00 PM.
+
+Thank you for your understanding.
+
+IT Department
+

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attachments - Email Forensics Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">📧</span>
+            <span>Email Forensics Analyzer</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('attachments_view') }}" class="active">Attachments</a>
+            <a href="{{ url_for('reset') }}" class="reset-btn">New Analysis</a>
+        </div>
+    </nav>
+
+    <main class="attachments-page">
+        <header class="page-header">
+            <h1>📎 Extracted Attachments</h1>
+            <p>All attachments extracted from the analyzed emails with metadata and hash values</p>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="attachment-stats">
+            <div class="stat-card">
+                <span class="stat-value">{{ stats.total_count }}</span>
+                <span class="stat-label">Total Files</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ stats.total_size_formatted }}</span>
+                <span class="stat-label">Total Size</span>
+            </div>
+            <div class="stat-card warning">
+                <span class="stat-value">{{ stats.dangerous_count }}</span>
+                <span class="stat-label">Dangerous Files</span>
+            </div>
+        </section>
+
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+            <input type="text" id="attachmentSearch" placeholder="Search attachments..." class="search-input">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="documents">Documents</option>
+                <option value="images">Images</option>
+                <option value="archives">Archives</option>
+                <option value="executables">Executables</option>
+                <option value="other">Other</option>
+            </select>
+            <label class="danger-toggle">
+                <input type="checkbox" id="dangerOnly">
+                <span>Show dangerous only</span>
+            </label>
+        </div>
+
+        <!-- Attachments Grid -->
+        <div class="attachments-grid" id="attachmentsGrid">
+            {% for attachment in attachments %}
+            <div class="attachment-card {% if attachment.is_dangerous %}dangerous{% endif %}" 
+                 data-category="{{ attachment.category }}"
+                 data-dangerous="{{ attachment.is_dangerous }}">
+                <div class="attachment-card-header">
+                    <span class="file-icon">
+                        {% if attachment.category == 'images' %}🖼️
+                        {% elif attachment.category == 'documents' %}📄
+                        {% elif attachment.category == 'archives' %}📦
+                        {% elif attachment.category == 'executables' %}⚠️
+                        {% elif attachment.category == 'media' %}🎬
+                        {% else %}📁{% endif %}
+                    </span>
+                    {% if attachment.is_dangerous %}
+                    <span class="danger-flag">⚠️ DANGEROUS</span>
+                    {% endif %}
+                </div>
+                
+                <div class="attachment-card-body">
+                    <h3 class="file-name" title="{{ attachment.filename }}">{{ attachment.filename[:25] }}{% if attachment.filename|length > 25 %}...{% endif %}</h3>
+                    <span class="file-type">{{ attachment.content_type }}</span>
+                    <span class="file-size">{{ attachment.size_formatted }}</span>
+                </div>
+                
+                <div class="attachment-card-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">From Email:</span>
+                        <span class="meta-value">#{{ attachment.email_id }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Category:</span>
+                        <span class="meta-value category-{{ attachment.category }}">{{ attachment.category }}</span>
+                    </div>
+                </div>
+                
+                <div class="attachment-card-hashes">
+                    <div class="hash-row">
+                        <span class="hash-label">MD5:</span>
+                        <span class="hash-value" title="{{ attachment.md5 }}">{{ attachment.md5[:16] }}...</span>
+                    </div>
+                    <div class="hash-row">
+                        <span class="hash-label">SHA256:</span>
+                        <span class="hash-value" title="{{ attachment.sha256 }}">{{ attachment.sha256[:16] }}...</span>
+                    </div>
+                </div>
+                
+                <div class="attachment-card-actions">
+                    <a href="{{ url_for('download_attachment', filename=attachment.saved_as) }}" 
+                       class="download-btn {% if attachment.is_dangerous %}dangerous{% endif %}"
+                       {% if attachment.is_dangerous %}onclick="return confirm('⚠️ This file may be dangerous. Download anyway?')"{% endif %}>
+                        ⬇️ Download
+                    </a>
+                    <a href="{{ url_for('email_detail', email_id=attachment.email_id) }}" class="view-email-btn">
+                        📧 View Email
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="no-attachments-message">
+                <span class="no-icon">📭</span>
+                <h3>No Attachments Found</h3>
+                <p>The analyzed emails contained no attachments.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script>
+        // Filter functionality
+        const searchInput = document.getElementById('attachmentSearch');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const dangerOnly = document.getElementById('dangerOnly');
+        const cards = document.querySelectorAll('.attachment-card');
+
+        function filterAttachments() {
+            const search = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+            const dangerousOnly = dangerOnly.checked;
+
+            cards.forEach(card => {
+                const filename = card.querySelector('.file-name').textContent.toLowerCase();
+                const cardCategory = card.dataset.category;
+                const isDangerous = card.dataset.dangerous === 'True';
+
+                const matchesSearch = filename.includes(search);
+                const matchesCategory = !category || cardCategory === category;
+                const matchesDanger = !dangerousOnly || isDangerous;
+
+                card.style.display = (matchesSearch && matchesCategory && matchesDanger) ? '' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', filterAttachments);
+        categoryFilter.addEventListener('change', filterAttachments);
+        dangerOnly.addEventListener('change', filterAttachments);
+    </script>
+</body>
+</html>

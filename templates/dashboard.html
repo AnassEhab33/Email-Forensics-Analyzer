@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Email Forensics Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">📧</span>
+            <span>Email Forensics Analyzer</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+            <a href="{{ url_for('attachments_view') }}">Attachments</a>
+            <a href="{{ url_for('reset') }}" class="reset-btn">New Analysis</a>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Forensic Analysis Report</h1>
+                <p>File: <strong>{{ results.filename }}</strong> • Analyzed: {{ results.analyzed_at[:19] }}</p>
+            </div>
+            <div class="threat-indicator threat-{{ results.spoofing_summary.critical_count > 0 and 'critical' or (results.spoofing_summary.high_count > 0 and 'high' or (results.spoofing_summary.medium_count > 0 and 'medium' or 'low')) }}">
+                <span class="threat-label">Threat Level</span>
+                <span class="threat-value">
+                    {% if results.spoofing_summary.critical_count > 0 %}CRITICAL
+                    {% elif results.spoofing_summary.high_count > 0 %}HIGH
+                    {% elif results.spoofing_summary.medium_count > 0 %}MEDIUM
+                    {% else %}LOW{% endif %}
+                </span>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon email-icon">📧</div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ results.email_stats.total_emails }}</span>
+                    <span class="stat-label">Total Emails</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon sender-icon">👤</div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ results.email_stats.unique_senders }}</span>
+                    <span class="stat-label">Unique Senders</span>
+                </div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon warning-icon">⚠️</div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ results.spoofing_summary.critical_count + results.spoofing_summary.high_count }}</span>
+                    <span class="stat-label">Suspicious Emails</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon attachment-icon">📎</div>
+                <div class="stat-content">
+                    <span class="stat-value">{{ results.email_stats.total_attachments }}</span>
+                    <span class="stat-label">Attachments</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="dashboard-grid">
+            <section class="panel alerts-panel">
+                <div class="panel-header">
+                    <h2>🔴 Spoofing Detection Alerts</h2>
+                </div>
+                <div class="panel-content">
+                    {% set suspicious_emails = results.emails | selectattr('spoofing.is_suspicious') | list %}
+                    {% if suspicious_emails %}
+                        <div class="alert-list">
+                            {% for email in suspicious_emails %}
+                            <div class="alert-item risk-{{ email.spoofing.risk_level | lower }}">
+                                <div class="alert-badge">{{ email.spoofing.risk_level }}</div>
+                                <div class="alert-content">
+                                    <a href="{{ url_for('email_detail', email_id=email.data.id) }}" class="alert-subject">
+                                        {{ email.data.subject[:50] }}{% if email.data.subject|length > 50 %}...{% endif %}
+                                    </a>
+                                    <span class="alert-from">From: {{ email.data.from[:40] }}</span>
+                                    <div class="alert-indicators">
+                                        {% for indicator in email.spoofing.indicators[:2] %}
+                                        <span class="indicator-tag">{{ indicator.title }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="alert-score">{{ email.spoofing.risk_score }}%</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-alerts">
+                            <span class="no-alerts-icon">✅</span>
+                            <p>No spoofing indicators detected</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="panel graph-panel">
+                <div class="panel-header">
+                    <h2>🔗 Sender/Receiver Interaction Graph</h2>
+                </div>
+                <div class="panel-content">
+                    <div id="interactionGraph"></div>
+                </div>
+            </section>
+
+            <section class="panel chart-panel">
+                <div class="panel-header">
+                    <h2>📊 Risk Distribution</h2>
+                </div>
+                <div class="panel-content">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </section>
+
+            <section class="panel emails-panel">
+                <div class="panel-header">
+                    <h2>📋 All Emails</h2>
+                    <div class="filter-controls">
+                        <input type="text" id="emailSearch" placeholder="Search emails..." class="search-input">
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="email-table-container">
+                        <table class="email-table" id="emailTable">
+                            <thead>
+                                <tr>
+                                    <th>Risk</th>
+                                    <th>From</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Attachments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for email in results.emails %}
+                                <tr class="email-row risk-row-{{ email.spoofing.risk_level | lower }}" 
+                                    onclick="window.location='{{ url_for('email_detail', email_id=email.data.id) }}'">
+                                    <td>
+                                        <span class="risk-badge risk-{{ email.spoofing.risk_level | lower }}">
+                                            {{ email.spoofing.risk_level }}
+                                        </span>
+                                    </td>
+                                    <td class="from-cell">{{ email.data.from[:35] }}{% if email.data.from|length > 35 %}...{% endif %}</td>
+                                    <td class="subject-cell">{{ email.data.subject[:40] }}{% if email.data.subject|length > 40 %}...{% endif %}</td>
+                                    <td class="date-cell">{{ email.data.date[:16] if email.data.date else 'N/A' }}</td>
+                                    <td class="attachment-cell">
+                                        {% if email.data.attachments %}
+                                        <span class="attachment-badge">📎 {{ email.data.attachments | length }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <script>
+        var graphData = {{ graph_data | safe }};
+        var criticalCount = {{ results.spoofing_summary.critical_count }};
+        var highCount = {{ results.spoofing_summary.high_count }};
+        var mediumCount = {{ results.spoofing_summary.medium_count }};
+        var lowCount = {{ results.spoofing_summary.low_count }};
+        var cleanCount = {{ results.spoofing_summary.clean_count }};
+        
+        window.onload = function() {
+            // INTERACTION GRAPH
+            try {
+                var container = document.getElementById('interactionGraph');
+                if (typeof vis !== 'undefined' && graphData && graphData.nodes && graphData.nodes.length > 0) {
+                    var nodeData = [];
+                    for (var i = 0; i < graphData.nodes.length; i++) {
+                        var node = graphData.nodes[i];
+                        nodeData.push({
+                            id: node.id,
+                            label: node.label,
+                            title: node.title,
+                            color: {
+                                background: node.sent > node.received ? '#6366f1' : '#10b981',
+                                border: '#1e1e2e',
+                                highlight: { background: '#8b5cf6', border: '#fff' }
+                            },
+                            font: { color: '#fff', size: 14 },
+                            size: 20 + Math.min(node.total * 5, 40)
+                        });
+                    }
+                    
+                    var edgeData = [];
+                    for (var j = 0; j < graphData.edges.length; j++) {
+                        var edge = graphData.edges[j];
+                        edgeData.push({
+                            from: edge.from,
+                            to: edge.to,
+                            value: edge.value,
+                            title: edge.title,
+                            arrows: 'to',
+                            color: { color: '#6366f1', highlight: '#8b5cf6' },
+                            width: 2 + Math.min(edge.value, 5)
+                        });
+                    }
+                    
+                    var nodes = new vis.DataSet(nodeData);
+                    var edges = new vis.DataSet(edgeData);
+                    
+                    var options = {
+                        physics: {
+                            enabled: true,
+                            stabilization: { iterations: 100 },
+                            barnesHut: { gravitationalConstant: -3000, springLength: 150 }
+                        },
+                        interaction: { hover: true, tooltipDelay: 100 },
+                        nodes: { shape: 'dot', borderWidth: 3 },
+                        edges: { smooth: { type: 'continuous' } }
+                    };
+                    
+                    new vis.Network(container, { nodes: nodes, edges: edges }, options);
+                } else {
+                    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#a1a1aa;"><p>No interaction data</p></div>';
+                }
+            } catch (e) {
+                console.error('Graph Error:', e);
+            }
+            
+            // RISK CHART
+            try {
+                if (typeof Chart !== 'undefined') {
+                    var ctx = document.getElementById('riskChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Critical', 'High', 'Medium', 'Low', 'Clean'],
+                            datasets: [{
+                                data: [criticalCount, highCount, mediumCount, lowCount, cleanCount],
+                                backgroundColor: ['#ef4444', '#f97316', '#eab308', '#6366f1', '#10b981'],
+                                borderColor: '#1e1e2e',
+                                borderWidth: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { color: '#a1a1aa', padding: 15, font: { size: 12 } }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Chart Error:', e);
+            }
+            
+            // SEARCH
+            document.getElementById('emailSearch').addEventListener('input', function(e) {
+                var search = e.target.value.toLowerCase();
+                var rows = document.querySelectorAll('#emailTable tbody tr');
+                for (var k = 0; k < rows.length; k++) {
+                    var text = rows[k].textContent.toLowerCase();
+                    rows[k].style.display = text.indexOf(search) > -1 ? '' : 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>
