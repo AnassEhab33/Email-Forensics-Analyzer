@@ -1,4 +1,4 @@
-# 📧 Email Forensics Analyzer
+# Email Forensics Analyzer
 
 A comprehensive email forensics tool for investigating phishing campaigns and email spoofing attacks.
 
