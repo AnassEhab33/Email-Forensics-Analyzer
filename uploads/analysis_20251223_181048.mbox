@@ -1,0 +1,50 @@
+From paypal-security@paypa1-support.com Tue Dec 23 18:01:16 2025
+MIME-Version: 1.0
+Date: Tue, 23 Dec 2025 18:01:16 +0200
+Message-ID: <alert-883736@mail.paypa1-support.com>
+Subject: ⚠️ Immediate Action Required – Account Suspension Pending
+From: PayPal Security Team <paypal-security@paypa1-support.com>
+To: mahmoud elkhaligy <mahmoud.elkhaligy@ejust.edu.eg>
+Content-Type: multipart/alternative; boundary="BOUNDARY123"
+
+--BOUNDARY123
+Content-Type: text/plain; charset="UTF-8"
+
+Dear Customer,
+
+We detected suspicious activity on your PayPal account.
+
+⚠️ Your account will be LIMITED within 24 HOURS unless you verify your identity.
+
+Please confirm your information immediately to avoid permanent suspension:
+
+http://paypa1-secure-login.evil-site.com/verify?session=8891
+
+Failure to act will result in loss of access to your funds.
+
+PayPal Security Team
+
+--BOUNDARY123
+Content-Type: text/html; charset="UTF-8"
+
+<html>
+<body>
+<p>Dear Customer,</p>
+
+<p><b>⚠️ We detected unusual activity on your PayPal account.</b></p>
+
+<p>Your account will be <b>limited within 24 hours</b> unless you verify your identity.</p>
+
+<p>
+<a href="http://paypa1-secure-login.evil-site.com/verify?session=8891">
+Verify Account Now
+</a>
+</p>
+
+<p>If you do not act immediately, your funds may be permanently inaccessible.</p>
+
+<p>PayPal Security Team</p>
+</body>
+</html>
+
+--BOUNDARY123--

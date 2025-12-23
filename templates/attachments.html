@@ -99,11 +99,11 @@
                 <div class="attachment-card-hashes">
                     <div class="hash-row">
                         <span class="hash-label">MD5:</span>
-                        <span class="hash-value" title="{{ attachment.md5 }}">{{ attachment.md5[:16] }}...</span>
+                        <span class="hash-value full-hash" onclick="copyHash(this)" title="Click to copy">{{ attachment.md5 }}</span>
                     </div>
                     <div class="hash-row">
                         <span class="hash-label">SHA256:</span>
-                        <span class="hash-value" title="{{ attachment.sha256 }}">{{ attachment.sha256[:16] }}...</span>
+                        <span class="hash-value full-hash" onclick="copyHash(this)" title="Click to copy">{{ attachment.sha256 }}</span>
                     </div>
                 </div>
                 
@@ -129,6 +129,20 @@
     </main>
 
     <script>
+        // Copy hash to clipboard
+        function copyHash(element) {
+            const hash = element.textContent;
+            navigator.clipboard.writeText(hash).then(() => {
+                const original = element.textContent;
+                element.textContent = '✓ Copied!';
+                element.style.color = '#10b981';
+                setTimeout(() => {
+                    element.textContent = original;
+                    element.style.color = '';
+                }, 1500);
+            });
+        }
+
         // Filter functionality
         const searchInput = document.getElementById('attachmentSearch');
         const categoryFilter = document.getElementById('categoryFilter');

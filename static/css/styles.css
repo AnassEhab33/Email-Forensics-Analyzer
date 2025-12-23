@@ -1516,3 +1516,32 @@ body {
     flex-direction: column;
   }
 }
+
+/* Full Hash Display */
+.full-hash {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.7rem;
+  word-break: break-all;
+  cursor: pointer;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  display: block;
+  margin-top: 4px;
+  transition: all 0.2s ease;
+}
+
+.full-hash:hover {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--accent-primary);
+}
+
+.hash-row {
+  margin-bottom: 8px;
+}
+
+.hash-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
