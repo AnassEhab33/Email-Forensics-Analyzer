@@ -130,9 +130,9 @@ The included `test_emails.mbox` contains:
 ---
 
 ## 👨‍💻 Authors
-Anass Ehab Einshouka
-Seif Usama
-Mahmoud Omar Elkhaligy
+- Anass Ehab Einshouka
+- Seif Usama
+- Mahmoud Omar Elkhaligy
 
 ---
 Digital Forensics Course Project - 2025
