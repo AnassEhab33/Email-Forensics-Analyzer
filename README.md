@@ -1,6 +1,6 @@
 # Email Forensics Analyzer
-
-A comprehensive email forensics tool for investigating phishing campaigns and email spoofing attacks.
+**Description:**
+An email forensics tool for investigating phishing campaigns and email spoofing attacks.
 
 **Digital Forensics Course Project**
 
